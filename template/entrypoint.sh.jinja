@@ -6,7 +6,7 @@ if [ -f ".env" ]; then
     source .env
 fi
 
-{% if "django" in cookiecutter.extra_packages -%}
+{% if project_type == "django" -%}
 
 if [ "$DATABASE_URL" = "" ]; then
     echo DATABASE_URL not set, aborting.
@@ -21,9 +21,9 @@ fi
 
 gunicorn -w ${WORKERS:-1} core_sim.wsgi --access-logfile - --bind 0.0.0.0:8000
 
-{% elif "sqlalchemy" in cookiecutter.extra_packages -%}
-if [ "$SQLALCHEMY_DATABASE_URI" = "" ]; then
-    echo SQLALCHEMY_DATABASE_URI not set, aborting.
+{% elif project_type == "fastapi"  -%}
+if [ "$DATABASE_URL" = "" ]; then
+    echo DATABASE_URL not set, aborting.
     exit 1
 fi
 

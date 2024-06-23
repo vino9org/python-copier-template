@@ -1,7 +1,19 @@
 {
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
-        "tests"
+        "-s"
     ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.envFile": "${workspaceFolder}/.env",
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "mypy-type-checker.preferDaemon": true,
+    "jupyter.debugJustMyCode": false,
+    "debugpy.debugJustMyCode": false,
 }

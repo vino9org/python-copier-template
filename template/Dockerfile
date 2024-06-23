@@ -29,6 +29,4 @@ COPY --chown=app:app . .
 
 ENV PATH="/app/venv/bin:$PATH"
 CMD  ["/bin/sh", "/app/entrypoint.sh"]
-{% if project_type in ["django", "fastapi"] %}
 EXPOSE 8000
-{% endif %}

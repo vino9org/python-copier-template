@@ -55,21 +55,19 @@ Create a [config file](sample_prog.json) with options to use, then
 
 ```shell
 
-cat <<EOF > config.json
-{
-    "default_context": {
-        "project_name": "Some Program",
-        "project_slug": "some_prog",
-        "pkg_name": "some_prog",
-        "project_short_description": "Some python program",
-        "dockerfile_option": "Dockerfile with Github workflow",
-        "extra_packages": "None",
-        "version": "0.1.0"
-    }
-}
+cat <<EOF > config.yaml
+asyncio_db: true
+db_type: postgresql
+pkg_name: myt
+project_name: My Test Proj
+project_type: fastapi
+use_devcontainer: false
+use_docker: false
+use_github_action: false
+version: 0.1.0
 EOF
 
 
-cookiecutter gh:vino9org/cookiecutter-python --config-file config.json --no-input
+pipx run copier gh:vino9org/python-copier-template --config-file config.yaml --trust
 
 ```
