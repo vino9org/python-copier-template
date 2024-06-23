@@ -31,14 +31,16 @@ def ready():
     return "ready"
 
 {% if asyncio_db %}
+@app.get("/users/{user_name}")
 async def read_user(user_name: str, session: AsyncSession = Depends(db_session)):
-    user = await session.execute(select(models.User).filter_by(login_name=user_name))
+    result = await session.execute(select(models.User).filter_by(login_name=user_name))
     user = result.scalars().first()
     return {"user_id": user.id}
 {% else %}
 @app.get("/users/{user_name}")
 def read_user(user_name: str, session: Session = Depends(db_session)):
-    user = session.execute(select(models.User).filter_by(login_name=user_name)).scalars().first()
+    result = session.execute(select(models.User).filter_by(login_name=user_name))
+    user = result.scalars().first()
     return {"user_id": user.id}
 {% endif %}
 

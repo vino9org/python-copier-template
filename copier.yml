@@ -54,4 +54,5 @@ use_github_action:
   help: Generate GitHub action for building, unit test and building container image?
 
 _exclude:
-  - "dev"
+  - dev
+  - .git

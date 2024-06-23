@@ -1,0 +1,11 @@
+_commit: 6445c0d
+_src_path: /Users/lee/Projects/git/vino9org/python_copier_template
+asyncio_db: true
+db_type: postgresql
+pkg_name: myt
+project_name: My Test Proj
+project_type: fastapi
+use_devcontainer: false
+use_docker: false
+use_github_action: false
+version: 0.1.0

@@ -20,17 +20,25 @@ dependencies = [
     "django-extensions>=3.2.3",
 {%- endif %}
 {#- db_type -#}
-{%- if db_type == "postgresql" %}
-    "psycopg[binary]>=3.1.19",
+{%- if project_type == "fastapi" %}
+    {%- if db_type == "postgresql" %}
     {%- if asyncio_db %}
     "sqlalchemy[postgresql_asyncpg,mypy]>=2.0.31",
+    "psycopg[binary]>=3.1.19",
+    "aiosqlite>=0.20.0",
     {%- else %}
     "sqlalchemy[mypy]>=2.0.31",
+    "psycopg[binary]>=3.1.19",
     {%- endif %}
-{%- elif db_type == "sqlite" %}
+    {%- elif db_type == "sqlite" %}
     "sqlalchemy[mypy]>=2.0.31",
     {%- if asyncio_db %}
     "aiosqlite>=0.20.0",
+    "greenlet>=3.0.3",
+    {%- endif %}
+{%- elif project_type == "django" %}
+    {%- if db_type == "postgresql" %}
+    "psycopg[binary]>=3.1.19",
     {%- endif %}
 {%- endif %}
 ]
@@ -44,7 +52,7 @@ dev-dependencies = [
     "pytest-mock >= 3.14",
     "pytest-cov >= 4.1",
     "pytest-asyncio>=0.23.7",
-{%- if db_type != "none" %}
+{%- if project_type != "django" and db_type != "none" %}
     "sqlalchemy-utils >= 0.41.1",
 {%- endif %}
 {%- if project_type == "django" %}
