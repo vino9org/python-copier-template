@@ -36,6 +36,7 @@ dependencies = [
     "aiosqlite>=0.20.0",
     "greenlet>=3.0.3",
     {%- endif %}
+    {%- endif %}
 {%- elif project_type == "django" %}
     {%- if db_type == "postgresql" %}
     "psycopg[binary]>=3.1.19",
