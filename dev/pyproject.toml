@@ -1,0 +1,48 @@
+[project]
+name = "python_copier_template"
+version = "0.1.0"
+description = "Python project template used by Copier"
+authors = [
+    { name = "Li Lin", email = "guru.lin@gmail.com" }
+]
+dependencies = [
+    "copier>=9.2.0",
+]
+requires-python = ">= 3.12"
+
+[tool.rye]
+managed = true
+virtual = true
+dev-dependencies = [
+    "pytest>=8.2.2",
+    "pytest-copier>=0.4.1",
+    "pre-commit>=3.7.1",
+    "ruff>=0.4.10",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+
+# see ruff configuration options at
+# https://docs.astral.sh/ruff/configuration/
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+exclude = [".git", "__pycache__", "venv", ".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "C",
+    "I",
+    "A",
+] # Enable checks for PEP8, imports, and other standard rules
+ignore = ["E203", "E266"]
