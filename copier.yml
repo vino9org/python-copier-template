@@ -1,0 +1,40 @@
+# questions
+project_name:
+    type: str
+    help: What is the project name?
+
+pkg_name:
+    type: str
+    help: Top level Python package name
+    default: "{{ project_name|lower|replace(' ', '_') }}"
+
+version: 0.1.0
+
+project_type:
+  type: str
+  help: What type of project is this?
+  choices:
+    - simple
+    - django
+    - fastapi
+
+db_type:
+  type: str
+  help: what database is used in the project?
+  choices:
+    - none
+    - sqlite
+    - postgresql
+    # - mysql
+    # - mongodb
+
+asyncio_db:
+  type: bool
+  help: Use asyncio database driver?
+  choices:
+    true:
+      value: yes
+      validator: "{% if project_type != 'fastapi' %} Only for FastAPI project {% endif %}"
+    false  :
+      value: no
+
