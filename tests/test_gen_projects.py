@@ -15,7 +15,7 @@ def test_rendered_project(tmp_path: Path):
         shutil.rmtree(dst_path)
 
     answer_data = read_answer(cwd + "/answers/fastapi_async.yml")
-    result = run_copy(template_path, dst_path, data=answer_data)
+    result = run_copy(template_path, dst_path, data=answer_data, trust=True)
 
     print(result)
 
