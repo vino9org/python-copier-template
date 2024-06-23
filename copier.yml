@@ -35,6 +35,23 @@ asyncio_db:
     true:
       value: yes
       validator: "{% if project_type != 'fastapi' %} Only for FastAPI project {% endif %}"
-    false  :
+    false:
       value: no
 
+use_docker:
+  type: bool
+  default: false
+  help: Generate Dockerfile and script for building container image?
+
+use_devcontainer:
+  type: bool
+  default: false
+  help: Generate devcontainer.json?
+
+use_github_action:
+  type: bool
+  default: false
+  help: Generate GitHub action for building, unit test and building container image?
+
+_exclude:
+  - "dev"
