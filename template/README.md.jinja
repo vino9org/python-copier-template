@@ -1,0 +1,57 @@
+
+# Welcome to Python project
+
+This project is set up Python project with dev tooling pre-configured
+
+* ruff
+* mypy
+* VS Code support
+
+## Setup
+
+The easiest way to get started is use [Visual Studio Code with devcontainer](https://code.visualstudio.com/docs/devcontainers/containers)
+
+[rye](https://github.com/astral-sh/rye) is the blazing fast python project manager tool. Install it first before proceeding.
+
+
+## Quick Start
+
+```shell
+
+# the easiest way to install Rye
+curl -sSf https://rye.astral.sh/get | bash
+
+
+cd my_project_directory
+
+# create virtualenv and install dependencies
+rye sync
+
+{% if project_type == "django" %}
+# generate base django project
+rye run django-admin startproject {{ pkg_name }} .
+{% endif %}
+
+# fix various formatting and import issues automatically
+rye run ruff check . --fix
+
+{% if db_type != "none" %}
+# setup database needed and
+# and edit connection info in .env file
+# see below for more info
+cp env .env
+{% endif %}
+
+# run test to ensure the basic setup is working
+pytest -s -v
+
+# Hack away!!
+
+```
+
+{% if db_type != "none" %}
+## Database setup
+```tests/conftest.py``` contains logic to prepare the test database. By default, the database ar configured by ```.env``` file the projevt root directory.
+
+The main application database is configured by ```DATABASE_URL```. While ```ALEMBIC_DATABASE_URL``` can be used for Alembic. If not set, ```DATABASE_URL``` will be used.  When async database driver is used and the ```DATABASE_URL``` contains async driver and cannot be used by Alembic directly, so it is required to set ```ALEMBIC_DATABASE_URL``` when async database driver is used.
+{% endif %}

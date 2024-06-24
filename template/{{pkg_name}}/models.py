@@ -8,7 +8,7 @@ from sqlalchemy.orm import (
 
 # use this as Base in order to pass mypy checks
 class Base(DeclarativeBase):
-     pass
+    pass
 
 
 class User(Base):

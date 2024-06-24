@@ -218,7 +218,8 @@ def _boolstr_(dict_, key) -> str:
 
 def scenario_id(scenario: dict[str, Any]) -> str:
     sid = f"{scenario["project_type"]}-{scenario["db_type"]}-{_boolstr_(scenario,"asyncio_db")}"
-    sid += f"-{_boolstr_(scenario, 'use_docker')}-{_boolstr_(scenario, 'use_devcontainer')}-{_boolstr_(scenario, 'use_github_action')}"
+    sid += f"-{_boolstr_(scenario, 'use_docker')}-{_boolstr_(scenario, 'use_devcontainer')}"
+    sid += f"-{_boolstr_(scenario, 'use_github_action')}"
     return sid
 
 

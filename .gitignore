@@ -10,7 +10,6 @@ __pycache__
 cdk.out
 
 #dotenv
-.env*
 
 # test reports
 test-report/

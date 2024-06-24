@@ -27,6 +27,9 @@ filterwarnings = [
     "ignore::DeprecationWarning",
 ]
 
+[tool.rye.scripts]
+pre = "pre-commit run --all-files"
+
 
 # see ruff configuration options at
 # https://docs.astral.sh/ruff/configuration/
