@@ -42,6 +42,9 @@ rye run ruff check . --fix
 cp env .env
 {% endif %}
 
+# use pre-commit to ensure only clean code is commiteed
+rye run pre-commit install -f
+
 # run test to ensure the basic setup is working
 pytest -s -v
 
