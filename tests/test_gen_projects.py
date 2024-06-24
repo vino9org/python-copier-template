@@ -44,7 +44,10 @@ def test_generate_and_build(
         check_project_structure(dst_path, generator_ctx)
 
         if not skip_build:
-            run_pytest_in_project(dst_path)
+            if generator_ctx["project_type"] != "django":
+                # django project needs to run djang-admin startproject first
+                # conftest.py won't work before the project is initialized
+                run_pytest_in_project(dst_path)
             run_linting_in_project(dst_path, run_mypy=False)
             run_precommit_in_project(dst_path)
 
