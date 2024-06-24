@@ -1,10 +1,10 @@
 
 # Copier template for python project
 
-This template generates a python project with ready to go ```pyproject.toml``` configuration for pytest, linting tools.
+This a [Copier](https://copier.readthedocs.io/en/stable/) template generates a python project with ready to go ```pyproject.toml``` configuration for pytest, linting tools.
 
-* ruff
-* mypy
+* [ruff](https://docs.astral.sh/ruff/)
+* [mypy](https://github.com/python/mypy)
 * VS Code support
 
 ## Project Options
@@ -50,4 +50,4 @@ pipx run copier gh:vino9org/python-copier-template output_dir -a config.yaml --t
 ```
 
 ## Developer notes
-The unit test code contains logic to automatically generate test cases for various configuration options and run test against each of them, in order to guide the templaet from acciental break. See [tests/tooos.py](tests/tools.py) for more details.
+The unit test code contains logic to automatically generate test cases for various configuration options and run test against each of them, in order to guide the templaet from acciental break. See [tests/tools.py](tests/tools.py) for more details.
