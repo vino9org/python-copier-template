@@ -1,8 +1,8 @@
 asyncio_db: false
-db_type: postgresql
-pkg_name: mytx
+db_type: sqlite
+pkg_name: myt
 project_name: My Test Proj
-project_type: simple
+project_type: django
 use_devcontainer: false
 use_docker: false
 use_github_action: false

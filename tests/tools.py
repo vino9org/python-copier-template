@@ -24,8 +24,8 @@ def maybe_valid(data: dict[str, Any]) -> bool:
         # Django ORM doesn't support async yet
         return False
 
-    if data["project_type"] == "simple" and data["db_type"] == "none" and data["asyncio_db"]:
-        # for simple project without database, asyncio_db is not needed
+    if data["project_type"] in ["simple", "fastapi"] and data["db_type"] == "none" and data["asyncio_db"]:
+        # for project without database, asyncio_db is not needed
         return False
 
     return True
@@ -211,15 +211,14 @@ def check_project_structure(project_path: Path, answers: dict[str, Any]) -> None
         assert not (project_path / "database.py").exists()
 
 
-def _boolstr_(dict_, key) -> str:
-    val = "Y" if dict_[key] else "N"
-    return f"{key}({val})"
-
-
 def scenario_id(scenario: dict[str, Any]) -> str:
-    sid = f"{scenario["project_type"]}-{scenario["db_type"]}-{_boolstr_(scenario,"asyncio_db")}"
-    sid += f"-{_boolstr_(scenario, 'use_docker')}-{_boolstr_(scenario, 'use_devcontainer')}"
-    sid += f"-{_boolstr_(scenario, 'use_github_action')}"
+    skip_build, data = scenario["skip_build"], scenario["data"]
+    sid = "NB" if skip_build else "B"
+    sid += f"-{data["project_type"]}-{data["db_type"]}"
+    sid += f"-async({"Y" if data["asyncio_db"] else "N"}"
+    sid += f"-docker({"Y" if data["use_docker"] else "N"}"
+    sid += f"-docker({"Y" if data["use_devcontainer"] else "N"}"
+    sid += f"-docker({"Y" if data["use_github_action"] else "N"}"
     return sid
 
 
@@ -256,6 +255,7 @@ def enumerate_test_scenarios() -> dict[str, dict[str, Any]]:
     # then add fixed_values to complete the values required
     combinations = list(itertools.product(*list(options.values())))
     scenarios = [{**dict(zip(options.keys(), combo)), **fixed_values} for combo in combinations]
+    build_group = [{"skip_build": False, "data": entry} for entry in scenarios if maybe_valid(entry)]
 
     # generation all combination of 3 boolean options
     # then added to simple.yml to test all combinations of 3 bool values
@@ -278,6 +278,6 @@ def enumerate_test_scenarios() -> dict[str, dict[str, Any]]:
         }
         for combo in bool_combinations
     ]
+    no_build_group = [{"skip_build": True, "data": entry} for entry in use_xxx_scenarios]
 
-    all_scenarios = scenarios + use_xxx_scenarios  # [:3] smaller slice for debug
-    return {scenario_id(entry): entry for entry in all_scenarios if maybe_valid(entry)}
+    return {scenario_id(entry): entry for entry in (build_group + no_build_group)}

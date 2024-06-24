@@ -58,3 +58,5 @@ pytest -s -v
 
 The main application database is configured by ```DATABASE_URL```. While ```ALEMBIC_DATABASE_URL``` can be used for Alembic. If not set, ```DATABASE_URL``` will be used.  When async database driver is used and the ```DATABASE_URL``` contains async driver and cannot be used by Alembic directly, so it is required to set ```ALEMBIC_DATABASE_URL``` when async database driver is used.
 {% endif %}
+
+See the [generated pyproject.toml](pyproject.toml) for more details on the tools and configurations.

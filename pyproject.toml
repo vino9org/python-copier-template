@@ -25,6 +25,7 @@ minversion = "6.0"
 testpaths = ["tests"]
 filterwarnings = [
     "ignore::DeprecationWarning",
+    "ignore::copier.errors.DirtyLocalWarning",
 ]
 
 [tool.rye.scripts]

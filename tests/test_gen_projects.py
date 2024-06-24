@@ -22,7 +22,6 @@ def test_generate_and_build(
     generator_ctx,
     template_dir: str,
     tmp_path: Path,
-    skip_build: bool = False,
 ):
     """
     run copier to generate a project, then perform the following checks:
@@ -37,19 +36,25 @@ def test_generate_and_build(
     dst_path = tmp_path / f"p{suffix}"
 
     try:
-        run_copy(template_dir, dst_path, data=generator_ctx, unsafe=True)
+        skip_build = generator_ctx["skip_build"]
+        data = generator_ctx["data"]
+        run_tests = data["project_type"] != "django"
+
+        run_copy(template_dir, dst_path, data=data, unsafe=True)
 
         assert (dst_path / "pyproject.toml").is_file()
 
-        check_project_structure(dst_path, generator_ctx)
+        check_project_structure(dst_path, data)
 
-        if not skip_build:
-            if generator_ctx["project_type"] != "django":
-                # django project needs to run djang-admin startproject first
-                # conftest.py won't work before the project is initialized
-                run_pytest_in_project(dst_path)
-            run_linting_in_project(dst_path, run_mypy=False)
-            run_precommit_in_project(dst_path)
+        if skip_build:
+            return
+
+        if run_tests:
+            # django project needs to run djang-admin startproject first
+            # conftest.py won't work before the project is initialized
+            run_pytest_in_project(dst_path)
+        run_linting_in_project(dst_path, run_mypy=run_tests)
+        run_precommit_in_project(dst_path)
 
     except ValueError as e:
         if str(e).startswith("Invalid choice"):
@@ -84,6 +89,7 @@ def test_one_project(template_dir, testdata_path):
         shutil.rmtree(dst_path)
 
     answers = yaml2dict(testdata_path / "test_one_project.yml")
+    run_tests = answers["project_type"] != "django"
 
     result = run_copy(template_dir, dst_path, data=answers, unsafe=True)
 
@@ -91,6 +97,7 @@ def test_one_project(template_dir, testdata_path):
     assert (dst_path / ".copier-answers.yml").is_file()
 
     check_project_structure(dst_path, answers)
-    run_pytest_in_project(dst_path)
-    run_linting_in_project(dst_path, run_mypy=False)  # mypy is too slow
+    if run_tests:
+        run_pytest_in_project(dst_path)
+    run_linting_in_project(dst_path, run_mypy=run_tests)  # mypy is too slow
     run_precommit_in_project(dst_path)

@@ -22,4 +22,4 @@ def test_read_yaml(testdata_path):
 
 def test_enumerate_test_scenarios():
     scenarios = enumerate_test_scenarios()
-    assert len(scenarios) > 2  # 26 as of the latest commit
+    assert len(scenarios) > 2  # 20 as of the latest commit
