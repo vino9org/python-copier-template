@@ -1,0 +1,9 @@
+asyncio_db: false
+db_type: postgresql
+pkg_name: mytx
+project_name: My Test Proj
+project_type: simple
+use_devcontainer: false
+use_docker: false
+use_github_action: false
+version: 0.1.0

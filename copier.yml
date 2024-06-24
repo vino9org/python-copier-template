@@ -56,10 +56,6 @@ use_github_action:
   default: false
   help: Generate GitHub action for building, unit test and building container image?
 
-
-_exclude:
-  - .git
-
 _tasks:
     - git init .
     - git checkout -b develop
