@@ -1,0 +1,28 @@
+from sqlalchemy import select
+
+from {{ pkg_name }}.models import User
+
+{% if asyncio_db %}
+async def test_query_models(session):
+    result = await session.execute(select(User).filter_by(login_name="root"))
+    user = result.scalars().first()
+    assert user.id == 1
+
+{% if project_type == "fastapi" and asyncio_db %}
+async def test_get_user(client):
+    response = await client.get("/users/root")
+    assert response.status_code == 200
+    assert response.json() == {"user_id": 1}
+{% endif %}
+{% else %}
+def test_query_models(session):
+    user = session.execute(select(User).filter_by(login_name="root")).scalars().first()
+    assert user.id == 1
+
+{% if project_type == "fastapi" and asyncio_db %}
+def test_get_user(client):
+    response = client.get("/users/root")
+    assert response.status_code == 200
+    assert response.json() == {"user_id": 1}
+{% endif %}
+{% endif %}

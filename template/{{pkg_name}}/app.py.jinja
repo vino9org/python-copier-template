@@ -1,9 +1,0 @@
-import os
-{%- if asyncio_db %}
-print("use asyncio driver for {{ db_type }}")
-{%- else %}
-print("use regular driver for {{ db_type }}")
-{%- endif %}
-
-if __name__ == "__main__":
-    print(os.cwd())

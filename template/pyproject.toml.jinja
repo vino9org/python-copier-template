@@ -1,0 +1,129 @@
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "Copier template for generic Python 3 project with tooling configuration for testing, linting and IDE support"
+authors = [{ name = "Li Lin", email = "guru.lin@gmail.com" }]
+readme = "README.md"
+requires-python = ">= 3.12"
+dependencies = [
+    "python-dotenv >= 1.0.0",
+{#- project_type -#}
+{%- if project_type == "fastapi" %}
+    "fastapi>=0.111.0",
+    "uvicorn>=0.30.1",
+{%- elif project_type == "django" %}
+    "django>=5.0.6",
+    "django-ninja>=1.1.0",
+    "gunicorn>=22.0.0",
+    "dj-database-url>=2.2.0",
+    "django-extensions>=3.2.3",
+    {%- if db_type == "postgresql" %}
+    "psycopg[binary]>=3.1.19",
+    {%- endif %}
+{%- endif %}
+{#- db_type -#}
+{%- if db_type != "none" and project_type != "django" %}
+    "alembic >= 1.13.0",
+    "sqlalchemy[mypy]>=2.0.31",
+    {%- if db_type == "postgresql" %}
+    "psycopg[binary]>=3.1.19",
+    {%- if asyncio_db %}
+    "sqlalchemy[postgresql_asyncpg]>=2.0.31",
+    "aiosqlite>=0.20.0",
+    {%- endif %}
+    {%- elif db_type == "sqlite" and asyncio_db %}
+    "aiosqlite>=0.20.0",
+    "greenlet>=3.0.3",
+    {%- endif %}
+{%- endif %}
+]
+
+[tool.rye]
+managed = true
+virtual = true
+dev-dependencies = [
+    "pytest >= 7.4.0",
+    "pytest-dotenv >= 0.5.2",
+    "pytest-mock >= 3.14",
+    "pytest-cov >= 4.1",
+    "pytest-asyncio>=0.23.7",
+{%- if project_type != "django" and db_type != "none" %}
+    "sqlalchemy-utils >= 0.41.1",
+{%- endif %}
+{%- if project_type == "django" %}
+    "pytest-django>=4.8.0",
+    "django-stubs[compatible-mypy]>=5.0.2",
+{%- endif %}
+    "pre-commit >= 3.7.1",
+    "ruff >= 0.4.8",
+    "mypy >= 1.10.0",
+]
+
+[tool.rye.scripts]
+pre = "pre-commit run --all-files"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+{%- if project_type == "django" %}
+addopts = "--reuse-db"
+DJANGO_SETTINGS_MODULE="{{ pkg_name }}.settings"
+{%- endif %}
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+env_files = [".env"]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["."]
+omit = ["tests/*"]
+
+# see ruff configuration options at
+# https://docs.astral.sh/ruff/configuration/
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+exclude = [".git", "__pycache__", "venv", ".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "C",
+    "I",
+    "A",
+] # Enable checks for PEP8, imports, and other standard rules
+ignore = ["E203", "E266"]
+
+[tool.mypy]
+{%- if project_type == "django" %}
+plugins = ["mypy_django_plugin.main"]
+{%- elif db_type != "none" %}
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+{%- endif %}
+warn_return_any = false
+warn_unused_configs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+mypy_path = "."
+
+{%- if project_type == "django"%}
+[tool.django-stubs]
+django_settings_module = "{{ pkg_name }}.settings"
+{%- endif %}
+
+[[tool.mypy.overrides]]
+module = [
+    "dataclasses",
+{%- if project_type != "django" and db_type != "none" %}
+    "sqlalchemy_utils",
+{%- endif %}
+]
+ignore_missing_imports = true

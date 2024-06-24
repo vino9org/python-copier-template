@@ -1,0 +1,9 @@
+asyncio_db: true
+db_type: postgresql
+pkg_name: myt
+project_name: My Test Proj
+project_type: fastapi
+use_devcontainer: false
+use_docker: false
+use_github_action: false
+version: 0.1.0

@@ -4,12 +4,7 @@ __pycache__
 .pytest_cache
 .venv
 *.egg-info
-
-# CDK asset staging directory
-.cdk.staging
-cdk.out
-
-#dotenv
+.env*
 
 # test reports
 test-report/
@@ -26,4 +21,6 @@ pytest_junit.xml
 # AWS SAM CLI
 .aws-sam/
 
-# sample files
+# CDK asset staging directory
+.cdk.staging
+cdk.out

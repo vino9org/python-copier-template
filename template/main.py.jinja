@@ -1,0 +1,55 @@
+from typing import Iterator, AsyncIterator
+
+import uvicorn
+from fastapi import FastAPI, Depends
+
+{% if db_type != "none" %}
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
+
+from {{pkg_name}} import models
+
+from database import SessionLocal
+
+{% if asyncio_db %}
+async def db_session() -> AsyncIterator[AsyncSession]:
+     async with SessionLocal() as session:
+         yield session
+{% else %}
+def db_session() -> Iterator[Session]:
+    with SessionLocal() as session:
+        yield session
+{% endif %}
+{% endif %}
+
+app = FastAPI(docs_url=None, redoc_url=None)
+
+@app.get("/healthz")
+def health():
+    return "running"
+
+
+@app.get("/ready")
+def ready():
+    return "ready"
+
+{% if db_type != "none" %}
+{% if asyncio_db %}
+@app.get("/users/{user_name}")
+async def read_user(user_name: str, session: AsyncSession = Depends(db_session)):
+    result = await session.execute(select(models.User).filter_by(login_name=user_name))
+    user = result.scalars().first()
+    return {"user_id": user.id} # type: ignore
+{% else %}
+@app.get("/users/{user_name}")
+def read_user(user_name: str, session: Session = Depends(db_session)):
+    result = session.execute(select(models.User).filter_by(login_name=user_name))
+    user = result.scalars().first()
+    return {"user_id": user.id} # type: ignore
+{% endif %}
+{% endif %}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
