@@ -66,10 +66,6 @@ _tasks:
       rm Dockerfile entrypoint.sh
       {% endif %}
     - >-
-      {% if project_type != "quart" %}
-      rm main.py
-      {% endif %}
-    - >-
       {% if db_type == "none" %}
       rm -rf migrations {{ pkg_name }}/models.py tests/test_models.py
       {% endif %}

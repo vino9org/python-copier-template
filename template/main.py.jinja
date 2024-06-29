@@ -4,21 +4,23 @@ import logging.config
 import os
 from decimal import Decimal
 from pathlib import Path
-
-import orjson
 from dotenv import load_dotenv
+
+{% if project_type == "quart" -%}
+import orjson
 from flask_orjson import OrjsonProvider
 from quart import Quart
 {% if db_type != "none" -%}
 from tortoise.contrib.quart import register_tortoise
-{% endif -%}
+{% endif %}
+{% endif %}
 
 load_dotenv()
 
 with open(Path(__file__).parent / "logger_config.json", "r") as f:
     logging.config.dictConfig(json.load(f))
 
-
+{% if project_type == "quart" -%}
 app = Quart(__name__)
 
 @app.get("/healthz")
@@ -29,6 +31,7 @@ async def health():
 @app.get("/ready")
 async def ready():
     return "ready"
+{% endif -%}
 
 {% if db_type != "none" -%}
 TORTOISE_ORM = {
@@ -41,12 +44,18 @@ TORTOISE_ORM = {
     },
 }
 
+{% if project_type == "quart" -%}
 register_tortoise(
     app,
     config=TORTOISE_ORM,
     generate_schemas=False,
 )
 {% endif -%}
+{% endif -%}
 
 if __name__ == "__main__":
+{% if project_type == "quart" %}
     app.run()
+{% else %}
+    print("Hello {{ pkg_name }}")
+{% endif %}

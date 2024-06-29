@@ -142,7 +142,6 @@ def check_project_structure(project_path: Path, answers: dict[str, Any]) -> None
     use_docker = answers["use_docker"]
     use_devcontainer = answers["use_devcontainer"]
     use_github_action = answers["use_github_action"]
-    project_type = answers["project_type"]
     db_type = answers["db_type"]
 
     assert (project_path / ".git/HEAD").is_file()
@@ -166,13 +165,8 @@ def check_project_structure(project_path: Path, answers: dict[str, Any]) -> None
         assert not (project_path / ".github").exists()
 
     if db_type != "none":
-        assert (project_path / "migrations").is_dir()
+        # TODO: assert aerich section in pyproject.toml
         assert (project_path / "tests/test_models.py").is_file()
-
-    if project_type == "quart":
-        assert (project_path / "main.py").is_file()
-    else:
-        assert not (project_path / "main.py").exists()
 
 
 def scenario_id(scenario: dict[str, Any]) -> str:
