@@ -1,4 +1,3 @@
-asyncio_db: false
 db_type: none
 pkg_name: sim
 project_name: simple test proj

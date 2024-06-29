@@ -1,8 +1,7 @@
-asyncio_db: false
-db_type: sqlite
+db_type: none
 pkg_name: myt
 project_name: My Test Proj
-project_type: django
+project_type: quart
 use_devcontainer: false
 use_docker: false
 use_github_action: false

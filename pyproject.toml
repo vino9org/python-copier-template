@@ -36,7 +36,7 @@ pre = "pre-commit run --all-files"
 # https://docs.astral.sh/ruff/configuration/
 
 [tool.ruff]
-line-length = 120
+line-length = 90
 indent-width = 4
 exclude = [".git", "__pycache__", "venv", ".venv"]
 

@@ -11,26 +11,6 @@ from typing import Any
 import yaml
 
 
-def maybe_valid(data: dict[str, Any]) -> bool:
-    """
-    for obviously invalid test scenario, return False
-    otherwise return True but no gurantee it is a valid scenario
-    """
-    if data["project_type"] == "django" and data["db_type"] == "none":
-        # what's the pointo f using Django with ORM?
-        return False
-
-    if data["project_type"] == "django" and data["asyncio_db"]:
-        # Django ORM doesn't support async yet
-        return False
-
-    if data["project_type"] in ["simple", "fastapi"] and data["db_type"] == "none" and data["asyncio_db"]:
-        # for project without database, asyncio_db is not needed
-        return False
-
-    return True
-
-
 def prefix_in_list(mylist: list[str], prefix: str) -> bool:
     return any(item.startswith(prefix) for item in mylist)
 
@@ -89,7 +69,9 @@ def run_linting_in_project(project_path: Path, run_mypy: bool) -> None:
         # W391: Blank line at end of file.
         # F401: Module imported but unused.
         result = subprocess.run(
-            shlex.split("rye run ruff check . --ignore I001,E302,E303,W291,W292,W391,F401 --verbose"),
+            shlex.split(
+                "rye run ruff check . --ignore I001,E302,E303,W291,W292,W391,F401 --verbose"  # noqa
+            ),
             capture_output=True,
             text=True,
         )
@@ -133,37 +115,27 @@ def run_precommit_in_project(project_path: Path) -> None:
 def check_project_dependencies(project_path: Path, answers: dict[str, Any]) -> None:
     project_type = answers["project_type"]
     db_type = answers["db_type"]
-    asyncio_db = answers["asyncio_db"]
 
     dependencies = pyproject_dependencies(project_path, include_dev=True)
     # randomly pick one depdency to check
     assert prefix_in_list(dependencies, "pytest-dotenv")
 
-    if project_type == "django":
-        assert prefix_in_list(dependencies, "django")
-        assert not prefix_in_list(dependencies, "sqlalchemy")
-        assert not prefix_in_list(dependencies, "alembic")
-    elif project_type == "fastapi":
-        assert not prefix_in_list(dependencies, "django")
-        assert prefix_in_list(dependencies, "sqlalchemy")
-        assert prefix_in_list(dependencies, "alembic")
+    if project_type == "quart":
+        assert prefix_in_list(dependencies, "quart")
+        assert prefix_in_list(dependencies, "flask-orjson")
     elif project_type == "simple":
-        assert not prefix_in_list(dependencies, "sqlalchemy")
-        assert not prefix_in_list(dependencies, "alembic")
-        assert not prefix_in_list(dependencies, "django")
+        assert not prefix_in_list(dependencies, "quart")
 
-    if db_type == "postgresql" and not asyncio_db:
-        assert prefix_in_list(dependencies, "psycopg")
-    elif db_type == "postgresql" and asyncio_db:
-        assert prefix_in_list(dependencies, "psycopg")
-        # asyncpg is a feature of sqlalchemy, so not at the beginning of the string
-        assert prefix_in_list(dependencies, "aiosqlite") if asyncio_db else True
+    if db_type == "postgresql":
+        assert prefix_in_list(dependencies, "tortoise-orm[asyncpg]")
+        assert prefix_in_list(dependencies, "aerich")
     elif db_type == "sqlite":
-        assert not prefix_in_list(dependencies, "psycopg")
-        assert prefix_in_list(dependencies, "aiosqlite") if asyncio_db else True
+        assert prefix_in_list(dependencies, "tortoise-orm")
+        assert not prefix_in_list(dependencies, "tortoise-orm[asyncpg]")
+        assert prefix_in_list(dependencies, "aerich")
     elif db_type == "none":
-        assert not prefix_in_list(dependencies, "psycopg")
-        assert not prefix_in_list(dependencies, "aiosqlite")
+        assert not prefix_in_list(dependencies, "tortoise-orm")
+        assert not prefix_in_list(dependencies, "aerich")
 
 
 def check_project_structure(project_path: Path, answers: dict[str, Any]) -> None:
@@ -193,32 +165,23 @@ def check_project_structure(project_path: Path, answers: dict[str, Any]) -> None
     else:
         assert not (project_path / ".github").exists()
 
-    if project_type != "django" and db_type != "none":
-        assert (project_path / "alembic.ini").is_file()
+    if db_type != "none":
         assert (project_path / "migrations").is_dir()
         assert (project_path / "tests/test_models.py").is_file()
 
-    if project_type == "django" or db_type == "none":
-        assert not (project_path / "alembic.ini").exists()
-        assert not (project_path / "migrations").exists()
-        assert not (project_path / "tests/test_models.py").exists()
-
-    if project_type == "fastapi":
+    if project_type == "quart":
         assert (project_path / "main.py").is_file()
-        assert (project_path / "database.py").is_file()
     else:
         assert not (project_path / "main.py").exists()
-        assert not (project_path / "database.py").exists()
 
 
 def scenario_id(scenario: dict[str, Any]) -> str:
     skip_build, data = scenario["skip_build"], scenario["data"]
     sid = "NB" if skip_build else "B"
     sid += f"-{data["project_type"]}-{data["db_type"]}"
-    sid += f"-async({"Y" if data["asyncio_db"] else "N"}"
-    sid += f"-docker({"Y" if data["use_docker"] else "N"}"
-    sid += f"-docker({"Y" if data["use_devcontainer"] else "N"}"
-    sid += f"-docker({"Y" if data["use_github_action"] else "N"}"
+    sid += f"-docker({"Y" if data["use_docker"] else "N"})"
+    sid += f"-devcontainer({"Y" if data["use_devcontainer"] else "N"})"
+    sid += f"-action({"Y" if data["use_github_action"] else "N"})"
     return sid
 
 
@@ -254,8 +217,10 @@ def enumerate_test_scenarios() -> dict[str, dict[str, Any]]:
     # generate all possible combinations for remaining keys
     # then add fixed_values to complete the values required
     combinations = list(itertools.product(*list(options.values())))
-    scenarios = [{**dict(zip(options.keys(), combo)), **fixed_values} for combo in combinations]
-    build_group = [{"skip_build": False, "data": entry} for entry in scenarios if maybe_valid(entry)]
+    scenarios = [
+        {**dict(zip(options.keys(), combo)), **fixed_values} for combo in combinations
+    ]
+    build_group = [{"skip_build": False, "data": entry} for entry in scenarios]
 
     # generation all combination of 3 boolean options
     # then added to simple.yml to test all combinations of 3 bool values

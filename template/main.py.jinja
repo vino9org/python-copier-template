@@ -1,55 +1,52 @@
-from typing import Iterator, AsyncIterator
+import json
+import logging
+import logging.config
+import os
+from decimal import Decimal
+from pathlib import Path
 
-import uvicorn
-from fastapi import FastAPI, Depends
+import orjson
+from dotenv import load_dotenv
+from flask_orjson import OrjsonProvider
+from quart import Quart
+{% if db_type != "none" -%}
+from tortoise.contrib.quart import register_tortoise
+{% endif -%}
 
-{% if db_type != "none" %}
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
+load_dotenv()
 
-from {{pkg_name}} import models
+with open(Path(__file__).parent / "logger_config.json", "r") as f:
+    logging.config.dictConfig(json.load(f))
 
-from database import SessionLocal
 
-{% if asyncio_db %}
-async def db_session() -> AsyncIterator[AsyncSession]:
-     async with SessionLocal() as session:
-         yield session
-{% else %}
-def db_session() -> Iterator[Session]:
-    with SessionLocal() as session:
-        yield session
-{% endif %}
-{% endif %}
-
-app = FastAPI(docs_url=None, redoc_url=None)
+app = Quart(__name__)
 
 @app.get("/healthz")
-def health():
+async def health():
     return "running"
 
 
 @app.get("/ready")
-def ready():
+async def ready():
     return "ready"
 
-{% if db_type != "none" %}
-{% if asyncio_db %}
-@app.get("/users/{user_name}")
-async def read_user(user_name: str, session: AsyncSession = Depends(db_session)):
-    result = await session.execute(select(models.User).filter_by(login_name=user_name))
-    user = result.scalars().first()
-    return {"user_id": user.id} # type: ignore
-{% else %}
-@app.get("/users/{user_name}")
-def read_user(user_name: str, session: Session = Depends(db_session)):
-    result = session.execute(select(models.User).filter_by(login_name=user_name))
-    user = result.scalars().first()
-    return {"user_id": user.id} # type: ignore
-{% endif %}
-{% endif %}
+{% if db_type != "none" -%}
+TORTOISE_ORM = {
+    "connections": {"default": os.environ.get("DATABASE_URL")},
+    "apps": {
+        "models": {
+            "models": ["{{ pkg_name }}.models", "aerich.models"],
+            "default_connection": "default",
+        }
+    },
+}
 
+register_tortoise(
+    app,
+    config=TORTOISE_ORM,
+    generate_schemas=False,
+)
+{% endif -%}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    app.run()

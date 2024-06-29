@@ -1,10 +1,15 @@
-from tests.tools import enumerate_test_scenarios, prefix_in_list, pyproject_dependencies, yaml2dict
+from tests.tools import (
+    enumerate_test_scenarios,
+    prefix_in_list,
+    pyproject_dependencies,
+    yaml2dict,
+)
 
 
 def test_prefix_in_list():
-    assert prefix_in_list(["fastapi", "sqlalchemy"], "fastapi")
-    assert prefix_in_list(["fastapi", "sqlalchemy"], "sql")
-    assert not prefix_in_list(["fastapi", "sqlalchemy"], "django")
+    assert prefix_in_list(["quart", "tortoise-orm"], "quart")
+    assert prefix_in_list(["quart", "tortoise-orm"], "tortoise")
+    assert not prefix_in_list(["quart", "tortoise-orm"], "dangerou")
 
 
 def test_check_dependency(testdata_path):
@@ -16,8 +21,8 @@ def test_check_dependency(testdata_path):
 
 
 def test_read_yaml(testdata_path):
-    data = yaml2dict(testdata_path / "fastapi_async.yml")
-    assert data["project_type"] == "fastapi"
+    data = yaml2dict(testdata_path / "quart_pg.yml")
+    assert data["project_type"] == "quart"
 
 
 def test_enumerate_test_scenarios():

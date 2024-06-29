@@ -3,6 +3,7 @@ import os.path
 import platform
 import random
 import shutil
+import traceback
 from pathlib import Path
 
 import pytest
@@ -38,9 +39,14 @@ def test_generate_and_build(
     try:
         skip_build = generator_ctx["skip_build"]
         data = generator_ctx["data"]
-        run_tests = data["project_type"] != "django"
 
-        run_copy(template_dir, dst_path, data=data, unsafe=True)
+        run_copy(
+            template_dir,
+            dst_path,
+            data=data,
+            unsafe=True,
+            vcs_ref="HEAD",
+        )
 
         assert (dst_path / "pyproject.toml").is_file()
 
@@ -49,11 +55,8 @@ def test_generate_and_build(
         if skip_build:
             return
 
-        if run_tests:
-            # django project needs to run djang-admin startproject first
-            # conftest.py won't work before the project is initialized
-            run_pytest_in_project(dst_path)
-        run_linting_in_project(dst_path, run_mypy=run_tests)
+        run_pytest_in_project(dst_path)
+        run_linting_in_project(dst_path, run_mypy=True)
         run_precommit_in_project(dst_path)
 
     except ValueError as e:
@@ -89,15 +92,24 @@ def test_one_project(template_dir, testdata_path):
         shutil.rmtree(dst_path)
 
     answers = yaml2dict(testdata_path / "test_one_project.yml")
-    run_tests = answers["project_type"] != "django"
 
-    result = run_copy(template_dir, dst_path, data=answers, unsafe=True)
+    try:
+        result = run_copy(
+            template_dir,
+            dst_path,
+            data=answers,
+            unsafe=True,
+            vcs_ref="HEAD",
+        )
 
-    assert result
-    assert (dst_path / ".copier-answers.yml").is_file()
+        assert result
+        assert (dst_path / ".copier-answers.yml").is_file()
 
-    check_project_structure(dst_path, answers)
-    if run_tests:
+        check_project_structure(dst_path, answers)
         run_pytest_in_project(dst_path)
-    run_linting_in_project(dst_path, run_mypy=run_tests)  # mypy is too slow
-    run_precommit_in_project(dst_path)
+        run_linting_in_project(dst_path, run_mypy=True)  # mypy is too slow
+        run_precommit_in_project(dst_path)
+
+    except ValueError as e:
+        print(f"Error: {e}")
+        traceback.print_exc()

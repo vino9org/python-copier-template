@@ -33,11 +33,10 @@ Create a ```config.yml``` with options to use, then
 ```shell
 
 cat <<EOF > config.yaml
-asyncio_db: true
 db_type: postgresql
 pkg_name: myt
 project_name: My Test Proj
-project_type: fastapi
+project_type: quart
 use_devcontainer: false
 use_docker: false
 use_github_action: false
