@@ -1,23 +1,22 @@
 [project]
 name = "python_copier_template"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python project template used by Copier"
 authors = [
     { name = "Li Lin", email = "guru.lin@gmail.com" }
 ]
 dependencies = [
-    "copier>=9.2.0",
+    "copier>=9.3.1",
 ]
 requires-python = ">= 3.12"
 
-[tool.rye]
+[tool.uv]
 managed = true
-virtual = true
 dev-dependencies = [
     "pytest>=8.2.2",
     "pytest-copier>=0.4.1",
     "pre-commit>=3.7.1",
-    "ruff>=0.4.10",
+    "ruff>=0.6.3",
 ]
 
 [tool.pytest.ini_options]
@@ -27,9 +26,6 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::copier.errors.DirtyLocalWarning",
 ]
-
-[tool.rye.scripts]
-pre = "pre-commit run --all-files"
 
 
 # see ruff configuration options at

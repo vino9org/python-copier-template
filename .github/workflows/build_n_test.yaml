@@ -5,6 +5,7 @@ on:
     branches:
     - develop
     - main
+    - uv
 
   pull_request:
     branches:
@@ -30,17 +31,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements-dev.lock
+        pip install uv
+        uv sync
 
     - name: Linting
       if: success()
       run: |
-        ruff check .
-
-    - name: Install Rye
-      id: install-rye
-      run: |
-        curl -sSf https://rye.astral.sh/get | RYE_VERSION="0.34.0" RYE_INSTALL_OPTION="--yes" /bin/bash
+        uv run ruff check .
 
     - name: Configure Git
       run: |
@@ -49,5 +46,4 @@ jobs:
 
     - name: Unit tests
       run: |
-        source $HOME/.rye/env
-        pytest -v -s
+        uv run pytest -v -s
