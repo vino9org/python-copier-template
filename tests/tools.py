@@ -28,7 +28,7 @@ def pyproject_dependencies(project_path: Path, include_dev: bool = False) -> lis
 
     dependencies = pyproject_data.get("project", {}).get("dependencies", [])
     if include_dev:
-        dependencies += pyproject_data.get("tool.rye", {}).get("dev-dependencies", [])
+        dependencies += pyproject_data.get("tool.uv", {}).get("dev-dependencies", [])
 
     return dependencies
 
@@ -42,8 +42,8 @@ def run_pytest_in_project(project_path: Path) -> None:
     try:
         os.chdir(project_path)
 
-        subprocess.call(shlex.split("rye sync"))
-        assert subprocess.call(shlex.split("rye run pytest -v -s")) == 0
+        subprocess.call(shlex.split("uv sync"))
+        assert subprocess.call(shlex.split("uv run pytest -v -s")) == 0
     finally:
         os.chdir(current_path)
 
@@ -57,7 +57,7 @@ def run_linting_in_project(project_path: Path, run_mypy: bool) -> None:
     try:
         os.chdir(project_path)
 
-        subprocess.call(shlex.split("rye sync"))
+        subprocess.call(shlex.split("uv sync"))
         # run ruff but ignore formatting realted errors
         # some formatting, import related errors can be fixed automatically
         # so we ignore them here
@@ -70,7 +70,7 @@ def run_linting_in_project(project_path: Path, run_mypy: bool) -> None:
         # F401: Module imported but unused.
         result = subprocess.run(
             shlex.split(
-                "rye run ruff check . --ignore I001,E302,E303,W291,W292,W391,F401 --verbose"  # noqa
+                "uv run ruff check . --ignore I001,E302,E303,W291,W292,W391,F401 --verbose"  # noqa
             ),
             capture_output=True,
             text=True,
@@ -79,7 +79,7 @@ def run_linting_in_project(project_path: Path, run_mypy: bool) -> None:
 
         if run_mypy:
             result = subprocess.run(
-                shlex.split("rye run mypy ."),
+                shlex.split("uv run mypy ."),
                 capture_output=True,
                 text=True,
             )
@@ -98,8 +98,8 @@ def run_precommit_in_project(project_path: Path) -> None:
     try:
         os.chdir(project_path)
 
-        subprocess.call(shlex.split("rye sync"))
-        assert subprocess.call(shlex.split("rye run pre-commit install")) == 0
+        subprocess.call(shlex.split("uv sync"))
+        assert subprocess.call(shlex.split("uv run pre-commit install")) == 0
 
         # is adding a file necceeary?
         with open("a.py", "w") as f:
@@ -107,7 +107,7 @@ def run_precommit_in_project(project_path: Path) -> None:
             f.write("some_var = 0\n")
         assert subprocess.call(shlex.split("git add a.py")) == 0
 
-        assert subprocess.call(shlex.split("rye run pre-commit run")) == 0
+        assert subprocess.call(shlex.split("uv run pre-commit run")) == 0
     finally:
         os.chdir(current_path)
 

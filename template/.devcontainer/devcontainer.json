@@ -1,5 +1,5 @@
 {
-    "name": "python-rye",
+    "name": "python-uv",
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
     "customizations": {
         "vscode": {
@@ -14,7 +14,7 @@
         }
     },
     "features": {
-        "ghcr.io/schlich/devcontainer-features/rye:1": {},
+        "ghcr.io/va-h/devcontainers-features/uv:1": {}
     },
     "remoteUser": "vscode",
     "forwardPorts": [],

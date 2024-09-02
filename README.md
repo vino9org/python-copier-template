@@ -11,12 +11,8 @@ This a [Copier](https://copier.readthedocs.io/en/stable/) template generates a p
 The template supports the following application types with or without database drivers. If database driver is chosen, ```conftest.py``` will contain test databae preparation fixtures.
 
 * simple
-* [fastapi](https://fastapi.tiangolo.com/)
-* [django](https://www.djangoproject.com/)
+* [qaurt](https://quart.palletsprojects.com/en/latest/)
 
-For FastApi project, if a database driver is chosen, sqlalchemy and alembic will be included. Async db driver support is also included.
-
-For django project, ```django-admin startproject``` needs to be run manually before test cases will run.
 
 The following dev tooling are supported:
 * vscode

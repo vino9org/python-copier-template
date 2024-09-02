@@ -2,7 +2,7 @@ db_type: none
 pkg_name: myt
 project_name: My Test Proj
 project_type: quart
-use_devcontainer: false
-use_docker: false
-use_github_action: false
+use_devcontainer: true
+use_docker: true
+use_github_action: true
 version: 0.1.0
