@@ -1,5 +1,5 @@
 [project]
-name = "{{ project_name }}"
+name = "{{ pkg_name }}"
 version = "0.1.0"
 description = "Copier template for generic Python 3 project with tooling configuration for testing, linting and IDE support"
 authors = [{ name = "Li Lin", email = "guru.lin@gmail.com" }]
@@ -14,18 +14,17 @@ dependencies = [
 {%- endif %}
 {#- db_type -#}
 {%- if db_type == "postgresql" %}
-    "tortoise-orm[asyncpg]>=0.21.3",
+    "tortoise-orm[asyncpg]>=0.21.6",
 {%- elif db_type == "sqlite" %}
-    "tortoise-orm>=0.21.3",
+    "tortoise-orm>=0.21.6",
 {%- endif %}
 {%- if db_type != "none" %}
     "aerich>=0.7.2",
 {%- endif %}
 ]
 
-[tool.rye]
+[tool.uv]
 managed = true
-virtual = true
 dev-dependencies = [
     "pytest >= 7.4.0",
     "pytest-dotenv >= 0.5.2",
@@ -33,12 +32,9 @@ dev-dependencies = [
     "pytest-cov >= 4.1",
     "pytest-asyncio>=0.23.7",
     "pre-commit >= 3.7.1",
-    "ruff >= 0.4.8",
-    "mypy >= 1.10.0",
+    "ruff >= 0.6.3",
+    "mypy >= 1.11.2",
 ]
-
-[tool.rye.scripts]
-pre = "pre-commit run --all-files"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -49,6 +45,7 @@ filterwarnings = [
 ]
 env_files = [".env"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.run]
 source = ["."]

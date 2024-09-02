@@ -5,7 +5,6 @@ on:
     branches:
     - develop
     - main
-    - uv
 
   pull_request:
     branches:
