@@ -1,7 +1,7 @@
 # stage 1: build
-FROM python:3.12-bookworm as builder
-LABEL org.opencontainers.image.source https://github.com/owner/{{ pkg_name }}
-LABEL org.opencontainers.image.description "{{ project_name }}"
+FROM python:3.12-bookworm AS builder
+LABEL org.opencontainers.image.source=https://github.com/owner/{{ pkg_name }}
+LABEL org.opencontainers.image.description="{{ project_name }}"
 
 # install packages needed by python packages
 RUN apt-get update \
