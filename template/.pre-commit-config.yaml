@@ -2,7 +2,7 @@ exclude: "^$|deploy|scripts|tmp"
 fail_fast: false
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: check-merge-conflict
       - id: end-of-file-fixer
@@ -26,8 +26,15 @@ repos:
         files: ^pyproject\.toml$
         pass_filenames: false
 
+      - id: pyright
+        name: pyright
+        entry: pyright
+        language: system
+        types: [python]
+        pass_filenames: false
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.8
+    rev: v0.8.2
     hooks:
       - id: ruff
         args: [ --fix ]

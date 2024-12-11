@@ -1,6 +1,6 @@
 [project]
 name = "python_copier_template"
-version = "0.2.0"
+version = "0.3.0"
 description = "Python project template used by Copier"
 authors = [
     { name = "Li Lin", email = "guru.lin@gmail.com" }
