@@ -8,7 +8,7 @@
                 "ms-python.vscode-pylance",
                 "ms-python.debugpy",
                 "charliermarsh.ruff",
-                "ms-python.mypy-type-checker",
+                "ms-pyright.pyright",
                 "yzhang.markdown-all-in-one"
             ]
         }

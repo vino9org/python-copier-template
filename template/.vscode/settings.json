@@ -13,7 +13,5 @@
         },
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
-    "jupyter.debugJustMyCode": false,
-    "python.analysis.typeCheckingMode": "standard",
     "debugpy.debugJustMyCode": false,
 }

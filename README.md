@@ -4,7 +4,7 @@
 This a [Copier](https://copier.readthedocs.io/en/stable/) template generates a python project with ready to go ```pyproject.toml``` configuration for pytest, linting tools.
 
 * [ruff](https://docs.astral.sh/ruff/)
-* [mypy](https://github.com/python/mypy)
+* [pyright](https://github.com/microsoft/pyright)
 * VS Code support
 
 ## Project Options
@@ -17,7 +17,7 @@ The template supports the following application types with or without database d
 The following dev tooling are supported:
 * vscode
 * ruff
-* mypy
+* pyright
 * devcontainer
 * Dockerfile
 * GitHub action for unit test and container image creation

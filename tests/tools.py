@@ -48,7 +48,7 @@ def run_pytest_in_project(project_path: Path) -> None:
         os.chdir(current_path)
 
 
-def run_linting_in_project(project_path: Path, run_mypy: bool) -> None:
+def run_linting_in_project(project_path: Path) -> None:
     if not os.path.isdir(project_path):
         return
 
@@ -77,13 +77,12 @@ def run_linting_in_project(project_path: Path, run_mypy: bool) -> None:
         )
         assert result.returncode == 0, f"==RUFF output===\n{result.stdout}"
 
-        if run_mypy:
-            result = subprocess.run(
-                shlex.split("uv run mypy ."),
-                capture_output=True,
-                text=True,
-            )
-            assert result.returncode == 0, f"==MYPY output===\n{result.stdout}"
+        result = subprocess.run(
+            shlex.split("uv run pyright ."),
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"==Pyright output===\n{result.stdout}"
 
     finally:
         os.chdir(current_path)

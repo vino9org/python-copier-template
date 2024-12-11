@@ -17,9 +17,6 @@ test-report/
 coverage.xml
 pytest_junit.xml
 
-# mypy
-.mypy_cache/
-
 # intellj
 .idea/
 

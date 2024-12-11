@@ -30,7 +30,7 @@ def test_generate_and_build(
     2. check generated dependies in pyproject.toml
     when skip_build is True the following will also be checked:
     3. run pytest
-    4. run linting tools, i.e. ruff and mypy
+    4. run linting tools, i.e. ruff and pyright
     5. add a random file then run pre-commit
     """
     suffix = str(random.randint(1, 100))
@@ -56,7 +56,7 @@ def test_generate_and_build(
             return
 
         run_pytest_in_project(dst_path)
-        run_linting_in_project(dst_path, run_mypy=True)
+        run_linting_in_project(dst_path)
         run_precommit_in_project(dst_path)
 
     except ValueError as e:
@@ -107,7 +107,7 @@ def test_one_project(template_dir, testdata_path):
 
         check_project_structure(dst_path, answers)
         run_pytest_in_project(dst_path)
-        run_linting_in_project(dst_path, run_mypy=True)  # mypy is too slow
+        run_linting_in_project(dst_path)
         run_precommit_in_project(dst_path)
 
     except ValueError as e:

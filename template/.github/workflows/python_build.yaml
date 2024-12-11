@@ -43,7 +43,6 @@ jobs:
     - name: Install uv
       uses: astral-sh/setup-uv@v4
       with:
-        version: "0.5.5"
         enable-cache: true
 
     - name: Install Python using uv ${{ matrix.python-version }}
@@ -109,7 +108,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         # use path context so that .dockerignore will be processed.
         context: .
