@@ -58,7 +58,7 @@ _message_after_copy: |
 _tasks:
   - git init .
   - git checkout -b develop
-  - git add .gitignore .dockerignore .pre-commit-config.yaml .copier-answers.yml .vscode .python-version
+  - git add .gitignore .pre-commit-config.yaml .copier-answers.yml .vscode .python-version
   - >-
     {% if use_github_action %}
     git add .github
@@ -73,10 +73,9 @@ _tasks:
     {% endif %}
   - >-
     {% if use_docker %}
-    git add Dockerfile entrypoint.sh
+    git add Dockerfile entrypoint.sh .dockerignore
     {% else %}
-    rm Dockerfile entrypoint.sh
-    git rm .dockerignore
+    rm Dockerfile entrypoint.sh .dockerignore
     {% endif %}
   - >-
     {% if db_type == "none" %}
