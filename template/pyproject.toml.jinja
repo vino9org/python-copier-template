@@ -22,6 +22,15 @@ dependencies = [
     "aerich>=0.8.0",
 {%- endif %}
 ]
+
+[tool.setuptools]
+packages = ["{{ pkg_name }}"]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
 [dependency-groups]
 dev = [
     "pytest >= 8.3.0",
@@ -77,8 +86,9 @@ ignore = ["E203", "E266"]
 [tool.ruff.lint.per-file-ignores]
 "migrations/*.py" = ["E501"] # Ignore line too long for auto-generated migration files
 
-
+{% if db_type != "none" -%}
 [tool.aerich]
 tortoise_orm = "main.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
+{%- endif %}

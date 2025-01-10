@@ -3,13 +3,13 @@ _subdirectory: template
 
 # questions
 project_name:
-    type: str
-    help: What is the project name?
+  type: str
+  help: What is the project name?
 
 pkg_name:
-    type: str
-    help: Top level Python package name
-    default: "{{ project_name|lower|replace(' ', '_') }}"
+  type: str
+  help: Top level Python package name
+  default: "{{ project_name|lower|replace(' ', '_') }}"
 
 version: 0.1.0
 
@@ -44,16 +44,16 @@ use_github_action:
   help: Generate GitHub action for building, unit test and building container image?
 
 _message_after_copy: |
-    the project has been generated under "{{ project_name }}"
+  the project has been generated under "{{ project_name }}"
 
-    typically steps after generation:
+  typically steps after generation:
 
-      cd "{{project_name}}"
-      uv sync
-      source .venv/bin/activate
-      ruff check --fix .
+    cd "{{ _copier_conf.dst_path }}"
+    uv sync
+    source .venv/bin/activate
+    ruff check --fix .
 
-    consult README.md for more details
+  consult README.md for more details
 
 _tasks:
   - git init .
@@ -72,8 +72,11 @@ _tasks:
     rm -rf .devcontainer
     {% endif %}
   - >-
-    {% if not use_docker %}
-    rm Dockerfile entrypoint.sh .dockerignore
+    {% if use_docker %}
+    git add Dockerfile entrypoint.sh
+    {% else %}
+    rm Dockerfile entrypoint.sh
+    git rm .dockerignore
     {% endif %}
   - >-
     {% if db_type == "none" %}
